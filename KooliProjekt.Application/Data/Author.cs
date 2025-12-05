@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KooliProjekt.Application.Data
 {
-    public class Author
+    public class Author : Entity
     {
-        public int Id { get; set; }
-
         [Required]
         [MaxLength(50)]
         public string FirstName { get; set; }

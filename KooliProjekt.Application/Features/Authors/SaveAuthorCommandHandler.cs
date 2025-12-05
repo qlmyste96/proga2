@@ -1,23 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using KooliProjekt.Application.Data;
-using KooliProjekt.Application.Infrastructure.Paging;
+using KooliProjekt.Application.Data.Repositories;
 using KooliProjekt.Application.Infrastructure.Results;
 using MediatR;
 
 namespace KooliProjekt.Application.Features.Authors
 {
+    /// <summary>
+    /// Kasutab IAuthorRepositoryt
+    /// </summary>
     public class SaveAuthorCommandHandler : IRequestHandler<SaveAuthorCommand, OperationResult>
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IAuthorRepository _authorRepository;
 
-        public SaveAuthorCommandHandler(ApplicationDbContext dbContext)
+        public SaveAuthorCommandHandler(IAuthorRepository authorRepository)
         {
-            _dbContext = dbContext;
+            _authorRepository = authorRepository;
         }
 
         public async Task<OperationResult> Handle(SaveAuthorCommand request, CancellationToken cancellationToken)
@@ -25,19 +24,15 @@ namespace KooliProjekt.Application.Features.Authors
             var result = new OperationResult();
 
             var author = new Author();
-            if (request.Id == 0)
+            if (request.Id != 0)
             {
-                await _dbContext.Authors.AddAsync(author);
-            }
-            else
-            {
-                author = await _dbContext.Authors.FindAsync(request.Id);
+                author = await _authorRepository.GetByIdAsync(request.Id);
             }
 
             author.FirstName = request.FirstName;
             author.LastName = request.LastName;
 
-            await _dbContext.SaveChangesAsync();
+            await _authorRepository.SaveAsync(author);
 
             return result;
         }
