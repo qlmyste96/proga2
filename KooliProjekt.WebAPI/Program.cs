@@ -16,12 +16,9 @@ namespace KooliProjekt.WebAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-            // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(connectionString);
+                options.UseSqlite("Data Source=kooliprojekt.db");
             });
 
             builder.Services.AddControllers();
