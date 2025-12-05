@@ -12,22 +12,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Application.Features.Books
 {
-    public class ListBooksQueryHandler : IRequestHandler<ListBooksQuery, OperationResult<IList<Book>>>
+    public class ListBooksQueryHandler : IRequestHandler<ListBooksQuery, OperationResult<PagedResult<Book>>>
     {
         private readonly ApplicationDbContext _dbContext;
+
         public ListBooksQueryHandler(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<OperationResult<IList<Book>>> Handle(ListBooksQuery request, CancellationToken cancellationToken)
+        public async Task<OperationResult<PagedResult<Book>>> Handle(ListBooksQuery request, CancellationToken cancellationToken)
         {
-            var result = new OperationResult<IList<Book>>();
+            var result = new OperationResult<PagedResult<Book>>();
+
             result.Value = await _dbContext
                 .Books
                 .Include(book => book.Author)
                 .OrderBy(book => book.Title)
-                .ToListAsync();
+                .GetPagedAsync(request.Page, request.PageSize);
 
             return result;
         }

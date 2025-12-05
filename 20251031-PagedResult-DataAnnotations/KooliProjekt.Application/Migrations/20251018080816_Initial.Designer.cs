@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KooliProjekt.Application.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251017060807_Initial")]
+    [Migration("20251018080816_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -56,7 +56,7 @@ namespace KooliProjekt.Application.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -67,12 +67,17 @@ namespace KooliProjekt.Application.Migrations
             modelBuilder.Entity("KooliProjekt.Application.Data.ToDoItem", b =>
                 {
                     b.HasOne("KooliProjekt.Application.Data.ToDoList", "ToDoList")
-                        .WithMany()
+                        .WithMany("Items")
                         .HasForeignKey("ToDoListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ToDoList");
+                });
+
+            modelBuilder.Entity("KooliProjekt.Application.Data.ToDoList", b =>
+                {
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }
