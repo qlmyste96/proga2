@@ -47,8 +47,22 @@ namespace KooliProjekt.WebAPI
 
             app.UseAuthorization();
 
-
             app.MapControllers();
+
+            // Küsi DbContext ja kutsu Migrate meetodi, mis loob 
+            // andmebaasi kui seda pole ja lisab ära puuduvad 
+            // migratsioonid
+            using (var scope = app.Services.CreateScope())
+            using (var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+            {
+                dbContext.Database.Migrate();
+
+                // Andmete genereerimise lubame ainult Debug-režiimis
+#if (DEBUG)
+                var generator = new SeedData(dbContext);
+                generator.Generate();
+#endif
+            }
 
             app.Run();
         }
